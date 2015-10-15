@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import com.bord.sections.*;
+import sun.awt.OrientableFlowLayout;
 
 public class CharacterSheetForm implements Runnable {
     JFrame Form;
@@ -18,21 +19,27 @@ public class CharacterSheetForm implements Runnable {
         Form = new JFrame("Hello, !");
         PaneList = new JTabbedPane();
 
+        Form.setPreferredSize(new Dimension(800, 600));
+        Form.setResizable(false);
+
         // Sets the behavior for when the window is closed
         Form.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         CoolSheet = new CharacterSheet();
-        CoolSheet.AddSection(new TextSection("name","Name",1,200,30));
-        CoolSheet.AddSection(new TextSection("gender","Gender",1,200,30));
-        CoolSheet.AddSection(new TextSection("age","Age",1,200,30));
-        CoolSheet.AddSection(new TextSection("race","Race",1,200,30));
-        CoolSheet.AddSection(new TextSection("clothes","Civilian Clothes",1,200,30));
-        CoolSheet.AddSection(new TextSection("uniform","Uniform",1,200,30));
-        CoolSheet.AddSection(new BigTextSection("abilities","Abilities",1,200,30));
-        CoolSheet.AddSection(new BigTextSection("relationships","Relationships",1,200,30));
-        CoolSheet.AddSection(new BigTextSection("influence","Influence",1,200,30));
-        CoolSheet.AddSection(new BigTextSection("mentor","Mentor",1,200,30));
-        CoolSheet.AddSection(new BigTextSection("class", "Class", 2, 200, 30));
+        CoolSheet.AddSection(new TextSection("name","Name",1,200,20));
+        CoolSheet.AddSection(new TextSection("gender","Gender",1,200,20));
+        CoolSheet.AddSection(new TextSection("age","Age",1,200,20));
+        CoolSheet.AddSection(new TextSection("race","Race",1,200,20));
+        CoolSheet.AddSection(new TextSection("clothes","Civilian Clothes",1,200,20));
+        CoolSheet.AddSection(new TextSection("uniform","Uniform",1,200,20));
+        CoolSheet.AddSection(new BigTextSection("abilities","Abilities",1,200,100));
+        CoolSheet.AddSection(new BigTextSection("relationships","Relationships",1,200,100));
+
+        BasicTable<Influence> influences = new BasicTable<Influence>();
+
+        CoolSheet.AddSection(new TableSection("influence","Influence",1,influences));
+        CoolSheet.AddSection(new BigTextSection("mentor","Mentor",1,200,100));
+        CoolSheet.AddSection(new BigTextSection("class", "Class", 2, 200, 100));
 
         GridSection Conditions = new GridSection("conditions","Conditions",2,3);
         Conditions.AddEntry(new CheckboxSection("afraid",null,0));
@@ -87,9 +94,11 @@ public class CharacterSheetForm implements Runnable {
 
             if(page == null) {
                 page = new JPanel();
+                JScrollPane scrollpage = new JScrollPane(page, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 page.setLayout(new BoxLayout(page,1));
+                //page.setLayout(new OrientableFlowLayout(1));
                 Pages.add(pageindex,page);
-                PaneList.addTab("Page"+Integer.toString(pageindex+1), page);
+                PaneList.addTab("Page"+Integer.toString(pageindex+1), scrollpage);
             }
 
             AddSection(page,section);
@@ -99,23 +108,55 @@ public class CharacterSheetForm implements Runnable {
     public void AddSection(Container putitin,SheetSection section)
     {
         JPanel thebest = new JPanel();
-        thebest.setLayout(new BorderLayout(0, 0));
-        thebest.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.red),
-                thebest.getBorder()));
-        thebest.add(new JLabel(section.Name + ":"), BorderLayout.WEST);
-        thebest.add(Box.createHorizontalGlue());
+        thebest.setLayout(new BoxLayout(thebest,0));
+        JLabel label = new JLabel(section.Name + ":");
+
+        //thebest.add(Box.createHorizontalGlue());
+        thebest.add(label);
+
+        //thebest.setLayout(new FlowLayout());
+
         if(section.Component != null) {
-            thebest.add(section.Component,BorderLayout.EAST);
+            thebest.add(section.Component);
+            AddBorder((JComponent) section.Component, Color.orange);
         }
+
         putitin.add(thebest);
-        putitin.add(Box.createHorizontalGlue());
-        //thebest.add(Box.createVerticalGlue(),BorderLayout.SOUTH);
+    }
+
+    public void AddBorder(JComponent comp, Color col)
+    {
+        comp.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(col),
+                comp.getBorder()));
     }
 
     public static void main(String[] args) {
         CharacterSheetForm se = new CharacterSheetForm();
         // Schedules the application to be run at the correct time in the event queue.
         SwingUtilities.invokeLater(se);
+    }
+
+    private class Influence implements TableModellable {
+        String Name;
+        boolean ToMe;
+        boolean ToOther;
+
+        @Override
+        public Object getValue(int i) {
+            switch(i)
+            {
+                case(0):return Name;
+                case(1):return ToMe;
+                case(2):return ToOther;
+            }
+
+            return null;
+        }
+
+        @Override
+        public int getColumns() {
+            return 3;
+        }
     }
 }
