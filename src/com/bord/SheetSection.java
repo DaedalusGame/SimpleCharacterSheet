@@ -1,15 +1,12 @@
 package com.bord;
 
-import javax.json.*;
+import com.google.gson.*;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by TAMANDL on 14.10.2015.
  */
-public class SheetSection {
+public class SheetSection implements ConfigStoreable {
     public CharacterSheet Parent;
 
     public String Identifier;
@@ -23,5 +20,14 @@ public class SheetSection {
         Identifier = identifier;
         Name = name;
         Page = page;
+    }
+
+    @Override
+    public JsonElement SaveObject() {
+        return null;
+    }
+
+    @Override
+    public void LoadObject(JsonElement json) {
     }
 }

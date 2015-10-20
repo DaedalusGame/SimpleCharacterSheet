@@ -1,12 +1,12 @@
 package com.bord;
 
-import javax.json.*;
+import com.google.gson.*;
 
 /**
  * Created by TAMANDL on 14.10.2015.
  */
 public interface ConfigStoreable {
-    JsonObject SaveObject();
+    JsonElement SaveObject();
 
-    void LoadObject(JsonObject json);
+    void LoadObject(JsonElement json);
 }

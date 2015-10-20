@@ -1,6 +1,7 @@
 package com.bord.sections;
 
 import com.bord.SheetSection;
+import com.google.gson.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,5 +25,16 @@ public class BigTextSection extends SheetSection {
 
         TextArea = textarea;
         Component = scrollpane;
+    }
+
+    @Override
+    public JsonElement SaveObject()
+    {
+        return new JsonPrimitive(TextArea.getText());
+    }
+
+    @Override
+    public void LoadObject(JsonElement json) {
+        TextArea.setText(json.getAsString());
     }
 }
